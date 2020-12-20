@@ -8,11 +8,12 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import ru.kiloqky.wakeup.R
 import ru.kiloqky.wakeup.databinding.FragmentKeepEditBinding
 import ru.kiloqky.wakeup.rest.room.model.Keep
 import ru.kiloqky.wakeup.viewmodels.KeepViewModel
 
-class KeepAddFragment : Fragment() {
+class KeepAddFragment : Fragment(R.layout.fragment_keep_edit) {
     private var _binding: FragmentKeepEditBinding? = null
 
     lateinit var keep: Keep
@@ -27,7 +28,6 @@ class KeepAddFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        keep = Keep()
         _binding = FragmentKeepEditBinding.inflate(inflater, container, false)
         return _binding!!.root
     }
@@ -36,7 +36,7 @@ class KeepAddFragment : Fragment() {
         super.onDetach()
         keep.keepBody = _binding!!.editKeepBody.text.toString()
         keep.keepTitle = _binding!!.editTitle.text.toString()
-        if(keep.keepTitle != ""){
+        if (!keep.keepTitle.isNullOrBlank()) {
             keepViewModel.addKeep(keep)
         }
         val imm: InputMethodManager =

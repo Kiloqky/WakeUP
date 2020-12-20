@@ -1,5 +1,7 @@
 package ru.kiloqky.wakeup.view.keep
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,14 +21,32 @@ class KeepFragment : Fragment(R.layout.fragment_keep) {
     private var binding: FragmentKeepBinding? = null
 
     private val keepViewModel: KeepViewModel by viewModels({ requireActivity() })
-
+    private lateinit var recyclerKeepsAdapter:RecyclerKeepsAdapter
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initRV()
         initVM()
         refreshData()
         binding!!.fab.setOnClickListener {
             addKeep()
         }
+    }
+
+    private fun initRV() {
+        binding!!.recyclerKeeps.layoutManager = GridLayoutManager(context, 2)
+        recyclerKeepsAdapter = RecyclerKeepsAdapter(
+            {
+                editKeep(it)
+            }, {
+                val builder = AlertDialog.Builder(context)
+                builder.setTitle("delete this keep?")
+                    .setMessage("You want to delete this keep?")
+                    .setPositiveButton("Yes") { _: DialogInterface, _: Int ->
+                        deleteKeep(it)
+                    }.setNegativeButton("No") { _: DialogInterface, _: Int -> }
+                builder.show()
+            })
+        binding!!.recyclerKeeps.adapter = recyclerKeepsAdapter
     }
 
     private fun addKeep() {
@@ -38,7 +58,7 @@ class KeepFragment : Fragment(R.layout.fragment_keep) {
         findNavController().navigate(R.id.action_nav_keep_to_keepEdit)
     }
 
-    fun deleteKeep(keep: Keep){
+    fun deleteKeep(keep: Keep) {
         keepViewModel.deleteKeep(keep)
     }
 
@@ -53,12 +73,8 @@ class KeepFragment : Fragment(R.layout.fragment_keep) {
 
 
     private fun initVM() {
-        binding!!.recyclerKeeps.layoutManager = GridLayoutManager(context, 2)
-        val recyclerKeepsAdapter = RecyclerKeepsAdapter(this)
-        binding!!.recyclerKeeps.adapter = recyclerKeepsAdapter
         keepViewModel.recyclerKeeps.observe(viewLifecycleOwner, {
-            recyclerKeepsAdapter.data = it as ArrayList<Keep>
-            recyclerKeepsAdapter.notifyDataSetChanged()
+            recyclerKeepsAdapter.data = it
         })
     }
 

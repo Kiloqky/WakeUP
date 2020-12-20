@@ -8,10 +8,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.kiloqky.wakeup.R
 import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.forecast.entitiesOpenWeather.WeatherList
+import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.Hourly
+import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.WeatherMain
 import java.text.SimpleDateFormat
 import java.util.*
 
-class RecyclerViewTodayAdapter(private val data: ArrayList<WeatherList>) :
+class RecyclerViewTodayAdapter(private val data: Array<Hourly>) :
     RecyclerView.Adapter<RecyclerViewTodayAdapter.ViewHolder>() {
     private val dateFormat: SimpleDateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     private val dateFormatWithDay: SimpleDateFormat =
@@ -40,24 +42,14 @@ class RecyclerViewTodayAdapter(private val data: ArrayList<WeatherList>) :
             holder.dateTV.text = ("\uF014" + String.format(
                 Locale.getDefault(),
                 "%1.0f",
-                data[position].windRestModel.speed
+                data[position].wind
             ) + " m/s")
             holder.iconTV.typeface = holder.weatherFont
             holder.iconTV.textSize = 18.0f
-            holder.iconTV.text = (
-                    "\uF079" + String.format(
-                        Locale.getDefault(),
-                        "%1.0f",
-                        data[position].mainRestModel.pressure
-                    ))
+            holder.iconTV.text = ("\uF079" + data[position].pressure)
             holder.tempTV.typeface = holder.weatherFont
-            holder.tempTV.text = (
-                    "\uF07A" + String.format(
-                        Locale.getDefault(),
-                        "%1.0f",
-                        data[position].mainRestModel.humidity
-                    ) + "%"
-                    )
+            holder.tempTV.text = ("\uF07A" + data[position].humidity + "%")
+
         } else {
             val truePosition = position - 1
             var date = (dateFormat.format(data[truePosition].dt * 1000)).toString()
@@ -67,11 +59,11 @@ class RecyclerViewTodayAdapter(private val data: ArrayList<WeatherList>) :
             holder.dateTV.typeface = holder.justFont
             holder.dateTV.text = date
             holder.iconTV.typeface = holder.weatherFont
-            holder.iconTV.text = getIcon(data[truePosition].weatherRestModel[0].icon)
+            holder.iconTV.text = getIcon(data[truePosition].weather[0].icon)
             val temp = String.format(
                 Locale.getDefault(),
                 "%.0f",
-                data[truePosition].mainRestModel.temp - 272
+                data[truePosition].temp - 272
             ) + "\u2103"
             holder.tempTV.typeface = holder.justFont
             holder.tempTV.text = temp

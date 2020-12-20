@@ -7,13 +7,15 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Response
 import ru.kiloqky.wakeup.R
-import ru.kiloqky.wakeup.rest.retrofit.geolocation.GeolocationRepo
-import ru.kiloqky.wakeup.rest.retrofit.geolocation.entitiesGeolocation.Geolocation
-import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.forecast.OpenWeatherRepoForeCast
-import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.forecast.entitiesOpenWeather.WeatherList
-import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.forecast.entitiesOpenWeather.WeatherLists
+import ru.kiloqky.wakeup.rest.retrofit.geolocation.geocodingApi.GeocodingRepo
+import ru.kiloqky.wakeup.rest.retrofit.geolocation.geocodingApi.entities.GeocodingMain
+import ru.kiloqky.wakeup.rest.retrofit.geolocation.geolocationApi.GeolocationRepo
+import ru.kiloqky.wakeup.rest.retrofit.geolocation.geolocationApi.entities.Geolocation
+import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.OpenWeatherRepoOneCall
+import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.Daily
+import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.Hourly
+import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.WeatherMain
 import java.util.*
-import kotlin.collections.ArrayList
 
 class WeatherViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -26,8 +28,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     private val _weather = MutableLiveData<String>().apply {}
     private val _feel = MutableLiveData<String>().apply {}
 
-    private val _recyclerViewToday = MutableLiveData<ArrayList<WeatherList>>().apply {}
-    private val _recyclerViewMoreDays = MutableLiveData<ArrayList<WeatherList>>().apply {}
+    private val _recyclerViewToday = MutableLiveData<Array<Hourly>>().apply {}
+    private val _recyclerViewMoreDays = MutableLiveData<Array<Daily>>().apply {}
 
     val cityName: LiveData<LoadStateWrapper<String>> = _cityName
     val icon: LiveData<String> = _icon
@@ -37,8 +39,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
 
     val app = application
 
-    val recyclerViewToday: LiveData<ArrayList<WeatherList>> = _recyclerViewToday
-    val recyclerViewMoreDays: LiveData<ArrayList<WeatherList>> = _recyclerViewMoreDays
+    val recyclerViewToday: LiveData<Array<Hourly>> = _recyclerViewToday
+    val recyclerViewMoreDays: LiveData<Array<Daily>> = _recyclerViewMoreDays
 
     fun refreshCity() {
         _cityName.value = LoadStateWrapper(state = LoadState.LOADING)
@@ -50,7 +52,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                         response: Response<Geolocation?>
                     ) {
                         if (response.body() != null && response.isSuccessful) {
-                            initCity(response.body()!!)
+                            initCityName(response.body()!!)
                         }
                     }
 
@@ -62,61 +64,68 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
 
     }
 
-    private fun initCity(body: Geolocation) {
-        OpenWeatherRepoForeCast.Singleton.api.loadWeather(
-            body.location!!.lat,
-            body.location!!.lng,
-            apiKeyWeather
-        )!!
-            .enqueue(object : retrofit2.Callback<WeatherLists?> {
-                override fun onResponse(
-                    call: Call<WeatherLists?>,
-                    response: Response<WeatherLists?>
-                ) {
-                    initCityInfo(response.body())
+    private fun initCityName(body: Geolocation) {
+        GeocodingRepo.Singleton.api.loadLocation(
+            body.location!!.lat.toString() + "," + body.location!!.lng.toString(), apiKeyGeolocation
+        ).enqueue(object : retrofit2.Callback<GeocodingMain> {
+            override fun onResponse(call: Call<GeocodingMain>, response: Response<GeocodingMain>) {
+                initCity(body, response.body()!!.results[4].address)
+            }
+
+            override fun onFailure(call: Call<GeocodingMain>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
+    }
+
+    private fun initCity(body: Geolocation, address: String) {
+        OpenWeatherRepoOneCall.Singleton.api.loadWeather(
+            lat = body.location!!.lat,
+            lon = body.location!!.lng,
+            lang = Locale.getDefault().toString().toLowerCase(Locale.getDefault()).split("_")[0],
+            keyAPI = apiKeyWeather
+        )
+            .enqueue(object : retrofit2.Callback<WeatherMain> {
+                override fun onResponse(call: Call<WeatherMain>, response: Response<WeatherMain>) {
+                    println(address)
+                    println(response.body()!!.current.dt)
+                    initCityInfo(response.body(), address)
                 }
 
-                override fun onFailure(call: Call<WeatherLists?>, t: Throwable) {
-                    _cityName.postValue(
-                        LoadStateWrapper(
-                            state = LoadState.ERROR,
-                            error = "Unknown error"
-                        )
-                    )
+                override fun onFailure(call: Call<WeatherMain>, t: Throwable) {
+                    t.printStackTrace()
                 }
             })
     }
 
-    private fun initCityInfo(body: WeatherLists?) {
+    private fun initCityInfo(body: WeatherMain?, address: String) {
         //название города
-        _cityName.postValue(LoadStateWrapper(body!!.cityRestModel.name, LoadState.SUCCESS))
+        _cityName.postValue(LoadStateWrapper(address, LoadState.SUCCESS))
         //иконка погоды
-        _icon.postValue(getIcon(body.weatherLists[0].weatherRestModel[0].icon))
+        _icon.postValue(getIcon(body!!.current.weather[0].icon))
         //температура
         _temp.postValue(
             String.format(
                 Locale.getDefault(), "%.0f",
-                body.weatherLists[0].mainRestModel.temp - 272
+                body.current.temp - 272
             ) + "\u2103"
         )
         //ощущается как
         _feel.postValue(
             app.getString(R.string.feel_like) + String.format(
                 Locale.getDefault(), "%.0f",
-                body.weatherLists[0].mainRestModel.feelsLike - 272
+                body.current.feelsLike - 272
             ) + "\u2103"
         )
         //название погоды
-        _weather.postValue(body.weatherLists[0].weatherRestModel[0].main)
+        _weather.postValue(body.current.weather[0].description)
         //список погоды на сегодня
         _recyclerViewToday.postValue(
-            java.util.ArrayList(listOf(*body.weatherLists).subList(0, 16))
+            body.hourly
         )
         //список погоды на другие дни
-        val arrayList = ArrayList<WeatherList>()
-        arrayList.addAll(body.weatherLists)
         _recyclerViewMoreDays.postValue(
-            arrayList
+            body.daily
         )
     }
 

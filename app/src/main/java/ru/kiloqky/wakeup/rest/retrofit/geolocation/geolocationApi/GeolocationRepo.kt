@@ -1,4 +1,4 @@
-package ru.kiloqky.wakeup.rest.retrofit.geolocation
+package ru.kiloqky.wakeup.rest.retrofit.geolocation.geolocationApi
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

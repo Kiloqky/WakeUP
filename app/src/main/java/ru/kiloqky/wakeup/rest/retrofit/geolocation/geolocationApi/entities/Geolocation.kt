@@ -1,4 +1,4 @@
-package ru.kiloqky.wakeup.rest.retrofit.geolocation.entitiesGeolocation
+package ru.kiloqky.wakeup.rest.retrofit.geolocation.geolocationApi.entities
 
 import com.google.gson.annotations.SerializedName
 

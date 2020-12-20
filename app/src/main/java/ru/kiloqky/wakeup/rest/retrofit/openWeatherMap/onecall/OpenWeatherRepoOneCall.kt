@@ -3,7 +3,7 @@ package ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class OpenWeatherReoOneCall {
+class OpenWeatherRepoOneCall {
     object Singleton{
         val api: IOpenWeatherOneCall = createAdapter()
         private fun createAdapter(): IOpenWeatherOneCall {

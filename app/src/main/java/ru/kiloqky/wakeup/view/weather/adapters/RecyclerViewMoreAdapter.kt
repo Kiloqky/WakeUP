@@ -1,37 +1,26 @@
 package ru.kiloqky.wakeup.view.weather.adapters
 
-import android.app.AlertDialog
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.kiloqky.wakeup.R
-import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.forecast.entitiesOpenWeather.WeatherList
+import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.Daily
+import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.WeatherMain
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
 class RecyclerViewMoreAdapter(
-    private val fullData: ArrayList<WeatherList>
+    private val data: Array<Daily>
 ) :
     RecyclerView.Adapter<RecyclerViewMoreAdapter.ViewHolder>() {
-    private val data = ArrayList<WeatherList>()
-
-    init {
-        var i = 8
-        while (i < fullData.size) {
-            data.add(fullData[i])
-            i += 8
-        }
-    }
 
     private val dateFormat: SimpleDateFormat = SimpleDateFormat("EEEE", Locale.getDefault())
 
-    class ViewHolder(itemView: View, data: ArrayList<WeatherList>) :
+    class ViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
         val dateTV: TextView = itemView.findViewById(R.id.time)
         val tempTV: TextView = itemView.findViewById(R.id.temp_today)
@@ -41,21 +30,6 @@ class RecyclerViewMoreAdapter(
             val weatherFont: Typeface =
                 Typeface.createFromAsset(itemView.context.assets, "fonts/weather.ttf")
             iconTV.typeface = weatherFont
-            itemView.setOnClickListener {
-                val builder = AlertDialog.Builder(itemView.context)
-                builder.setTitle(dateTV.text)
-                val dataDialog =
-                    ArrayList(data.subList(adapterPosition * 8, adapterPosition * 8 + 8))
-                val recyclerView = RecyclerView(itemView.context)
-                recyclerView.layoutManager =
-                    LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
-                recyclerView.adapter = RecyclerViewTodayAdapter(dataDialog)
-                recyclerView.addItemDecoration(
-                    DividerItemDecoration(itemView.context, DividerItemDecoration.HORIZONTAL)
-                )
-                builder.setView(recyclerView)
-                builder.show()
-            }
         }
     }
 
@@ -66,22 +40,22 @@ class RecyclerViewMoreAdapter(
                 .inflate(
                     R.layout.item_list_weather_more, parent, false
                 )
-        return ViewHolder(view, fullData)
+        return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.iconTV.text = getIcon(data[position].weatherRestModel[0].icon)
+        holder.iconTV.text = getIcon(data[position].weather[0].icon)
         holder.dateTV.text = (dateFormat.format(data[position].dt * 1000)).toString()
         val temp = String.format(
             Locale.getDefault(),
             "%.0f",
-            data[position].mainRestModel.temp - 272
+            data[position].temp.day - 272
         ) + "\u2103"
         holder.tempTV.text = temp
     }
 
     override fun getItemCount(): Int {
-        return 4
+        return data.size
     }
 
     private fun getIcon(icon: String): String {

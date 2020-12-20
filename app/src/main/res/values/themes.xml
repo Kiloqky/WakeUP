@@ -2,17 +2,24 @@
     <!-- Base application theme. -->
     <style name="Theme.Weather" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryDark">@color/purple_700</item>
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryDark">@color/black</item>
         <item name="colorAccent">@color/teal_200</item>
         <!-- Customize your theme here. -->
     </style>
 
     <style name="Theme.Weather.NoActionBar">
+        <item name="android:fontFamily">@font/bold</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-    <style name="Theme.Weather.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="Theme.Weather.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="Theme.Weather.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="fontFamily">@font/bold</item>
+        </style>
+
+    <style name="Theme.Weather.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" >
+        <item name="fontFamily">@font/bold</item>
+    </style>
 </resources>

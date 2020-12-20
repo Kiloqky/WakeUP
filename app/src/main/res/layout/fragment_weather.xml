@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.weather.WeatherFragment">
+    <!--    android:background="#DDDDDD"-->
+    <!--    <androidx.appcompat.widget.AppCompatImageView-->
+    <!--        android:id="@+id/appCompatImageView"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:scaleType="fitXY"-->
+    <!--        android:src="@drawable/background_image"-->
+    <!--        app:layout_constraintBottom_toBottomOf="@+id/recycler_view_today"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent" />-->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/cityName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="@font/bold"
+                android:gravity="center"
+                android:textSize="35sp"
+                app:layout_constraintBottom_toTopOf="@+id/temp_main_now"
+                app:layout_constraintEnd_toEndOf="@+id/icon_main"
+                app:layout_constraintStart_toStartOf="@+id/temp_main_now" />
+
+            <TextView
+                android:id="@+id/icon_main"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="68dp"
+                android:gravity="center_horizontal"
+                android:textSize="50sp"
+                app:layout_constraintStart_toEndOf="@+id/temp_main_now"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/temp_main_now"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/bold"
+                android:gravity="center_horizontal"
+                android:textSize="40sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.406"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/icon_main" />
+
+            <TextView
+                android:id="@+id/weatherMain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/bold"
+                android:gravity="center"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toStartOf="@+id/icon_main"
+                app:layout_constraintHorizontal_bias="0.431"
+                app:layout_constraintStart_toEndOf="@+id/temp_main_now"
+                app:layout_constraintTop_toBottomOf="@+id/feel" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="184dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/feel"
+                app:layout_constraintVertical_bias="0.013"
+                tools:layout_editor_absoluteX="0dp" />
+
+            <TextView
+                android:id="@+id/feel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/regular"
+                android:gravity="center_horizontal|center_vertical"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="@+id/icon_main"
+                app:layout_constraintStart_toStartOf="@+id/temp_main_now"
+                app:layout_constraintTop_toBottomOf="@+id/temp_main_now" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_today"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="60dp"
+                android:overScrollMode="never"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/weatherMain" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_more"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="72dp"
+                android:overScrollMode="never"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/recycler_view_today" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</FrameLayout>

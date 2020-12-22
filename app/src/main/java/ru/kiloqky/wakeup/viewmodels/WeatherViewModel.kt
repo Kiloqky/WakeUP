@@ -15,6 +15,7 @@ import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.OpenWeatherRepoOne
 import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.Daily
 import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.Hourly
 import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.WeatherMain
+import java.lang.StringBuilder
 import java.util.*
 
 class WeatherViewModel(application: Application) : AndroidViewModel(application) {
@@ -66,16 +67,24 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
 
     private fun initCityName(body: Geolocation) {
         GeocodingRepo.Singleton.api.loadLocation(
-            body.location!!.lat.toString() + "," + body.location!!.lng.toString(), apiKeyGeolocation
-        ).enqueue(object : retrofit2.Callback<GeocodingMain> {
-            override fun onResponse(call: Call<GeocodingMain>, response: Response<GeocodingMain>) {
-                initCity(body, response.body()!!.results[4].address)
-            }
+            body.location!!.lat.toString() + ","
+                    + body.location!!.lng.toString(),
+                    apiKeyGeolocation
+        )
+            .enqueue(object : retrofit2.Callback<GeocodingMain> {
+                override fun onResponse(
+                    call: Call<GeocodingMain>,
+                    response: Response<GeocodingMain>
+                ) {
+                    var address = response.body()!!.plusCode.compound.split(" ")[1]
+                    address = address.substring(0, address.length - 1)
+                    initCity(body, address)
+                }
 
-            override fun onFailure(call: Call<GeocodingMain>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
+                override fun onFailure(call: Call<GeocodingMain>, t: Throwable) {
+                    t.printStackTrace()
+                }
+            })
     }
 
     private fun initCity(body: Geolocation, address: String) {
@@ -87,8 +96,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         )
             .enqueue(object : retrofit2.Callback<WeatherMain> {
                 override fun onResponse(call: Call<WeatherMain>, response: Response<WeatherMain>) {
-                    println(address)
-                    println(response.body()!!.current.dt)
                     initCityInfo(response.body(), address)
                 }
 

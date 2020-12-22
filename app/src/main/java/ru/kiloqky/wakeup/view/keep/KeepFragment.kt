@@ -7,9 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import org.koin.android.ext.android.inject
 import ru.kiloqky.wakeup.R
 import ru.kiloqky.wakeup.databinding.FragmentKeepBinding
 import ru.kiloqky.wakeup.rest.room.model.Keep
@@ -20,7 +20,7 @@ import ru.kiloqky.wakeup.viewmodels.KeepViewModel
 class KeepFragment : Fragment(R.layout.fragment_keep) {
     private var binding: FragmentKeepBinding? = null
 
-    private val keepViewModel: KeepViewModel by viewModels({ requireActivity() })
+    private val keepViewModel: KeepViewModel by inject()
     private lateinit var recyclerKeepsAdapter:RecyclerKeepsAdapter
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -30,6 +30,11 @@ class KeepFragment : Fragment(R.layout.fragment_keep) {
         binding!!.fab.setOnClickListener {
             addKeep()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshData()
     }
 
     private fun initRV() {

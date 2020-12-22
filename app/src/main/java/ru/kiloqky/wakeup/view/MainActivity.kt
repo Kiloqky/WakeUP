@@ -1,4 +1,4 @@
-package ru.kiloqky.wakeup
+package ru.kiloqky.wakeup.view
 
 import android.os.Bundle
 import android.view.Menu
@@ -11,6 +11,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
+import ru.kiloqky.wakeup.R
 
 class MainActivity : AppCompatActivity() {
 

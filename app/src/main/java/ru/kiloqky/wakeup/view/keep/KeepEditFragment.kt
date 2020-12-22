@@ -1,14 +1,12 @@
 package ru.kiloqky.wakeup.view.keep
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import org.koin.android.ext.android.inject
 import ru.kiloqky.wakeup.R
 import ru.kiloqky.wakeup.databinding.FragmentKeepEditBinding
 import ru.kiloqky.wakeup.rest.room.model.Keep
@@ -18,7 +16,7 @@ class KeepEditFragment : Fragment(R.layout.fragment_keep_edit) {
     private var _binding: FragmentKeepEditBinding? = null
 
     lateinit var keep: Keep
-    private val keepViewModel: KeepViewModel by viewModels({ requireActivity() })
+    private val keepViewModel: KeepViewModel by inject()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initVM()
@@ -28,9 +26,9 @@ class KeepEditFragment : Fragment(R.layout.fragment_keep_edit) {
     override fun onDetach() {
         super.onDetach()
         editKeep()
-        val imm: InputMethodManager =
-            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view?.windowToken, 0)
+//        val imm: InputMethodManager =
+//            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+//        imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
     override fun onCreateView(

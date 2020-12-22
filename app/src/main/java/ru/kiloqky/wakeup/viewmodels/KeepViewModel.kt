@@ -1,23 +1,17 @@
 package ru.kiloqky.wakeup.viewmodels
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.room.Room
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import ru.kiloqky.wakeup.rest.room.KeepDataBase
 import ru.kiloqky.wakeup.rest.room.model.Keep
 import kotlin.concurrent.thread
 
 
-class KeepViewModel(application: Application) : AndroidViewModel(application) {
-
-    //локальная бд
-    private var database: KeepDataBase = Room.databaseBuilder(
-        application.applicationContext,
-        KeepDataBase::class.java,
-        "keeps"
-    ).build()
+class KeepViewModel(var database: KeepDataBase) : ViewModel() {
 
     //общение между фрагментами
     private val _editingKeep = MutableLiveData<Keep>().apply {}
@@ -60,7 +54,7 @@ class KeepViewModel(application: Application) : AndroidViewModel(application) {
 
     //обновление базы данных
     fun fetchData() {
-        thread {
+        GlobalScope.launch {
             _recyclerKeeps.postValue(ArrayList(database.keepDao().getAll()))
         }
     }

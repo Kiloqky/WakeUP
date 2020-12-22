@@ -38,22 +38,19 @@ android {
 
 dependencies {
 
-    // Kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-
     // KTX
     implementation "androidx.core:core-ktx:$coreVersion"
     implementation "androidx.fragment:fragment-ktx:1.2.5"
-
-    //rxjava
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.14'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
     // UI
     implementation "androidx.appcompat:appcompat:$supportLibVersion"
     implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swipeRefreshLayout"
+
+    //koin
+    implementation "org.koin:koin-android-viewmodel:2.1.6"
+    implementation 'org.koin:koin-android:2.1.6'
 
     // Navigation
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"

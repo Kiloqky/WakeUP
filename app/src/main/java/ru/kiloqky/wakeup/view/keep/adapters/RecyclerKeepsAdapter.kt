@@ -36,11 +36,11 @@ class RecyclerKeepsAdapter(
             findViewById<TextView>(R.id.keepsBody).text = keep.keepBody
             findViewById<TextView>(R.id.keepsTitle).text = keep.keepTitle
             setOnLongClickListener {
-                onLongItemClick?.invoke(data[adapterPosition])
+                onLongItemClick?.invoke(keep)
                 return@setOnLongClickListener false
             }
             setOnClickListener {
-                onItemClick?.invoke(data[adapterPosition])
+                onItemClick?.invoke(keep)
             }
         }
     }

@@ -7,17 +7,20 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.kiloqky.wakeup.R
-import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.forecast.entitiesOpenWeather.WeatherList
 import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.Hourly
-import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.WeatherMain
 import java.text.SimpleDateFormat
 import java.util.*
 
-class RecyclerViewTodayAdapter(private val data: Array<Hourly>) :
+class RecyclerViewTodayAdapter :
     RecyclerView.Adapter<RecyclerViewTodayAdapter.ViewHolder>() {
     private val dateFormat: SimpleDateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     private val dateFormatWithDay: SimpleDateFormat =
         SimpleDateFormat("HH:mm\nEEEE", Locale.getDefault())
+    var data: List<Hourly> = emptyList()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val weatherFont: Typeface =
@@ -71,7 +74,7 @@ class RecyclerViewTodayAdapter(private val data: Array<Hourly>) :
     }
 
     override fun getItemCount(): Int {
-        return data.size + 1
+        return data.size
     }
 
     private fun getIcon(icon: String): String {

@@ -8,8 +8,8 @@ class WeatherMain {
     lateinit var current: Current
 
     @SerializedName("hourly")
-    lateinit var hourly: Array<Hourly>
+    lateinit var hourly: MutableList<Hourly>
 
     @SerializedName("daily")
-    lateinit var daily: Array<Daily>
+    lateinit var daily: MutableList<Daily>
 }

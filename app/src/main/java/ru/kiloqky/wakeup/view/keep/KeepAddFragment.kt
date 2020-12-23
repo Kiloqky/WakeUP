@@ -14,7 +14,7 @@ import ru.kiloqky.wakeup.rest.room.model.Keep
 import ru.kiloqky.wakeup.viewmodels.KeepViewModel
 
 class KeepAddFragment : Fragment(R.layout.fragment_keep_edit) {
-    private var _binding: FragmentKeepEditBinding? = null
+    private lateinit var binding: FragmentKeepEditBinding
 
     lateinit var keep: Keep
     private val keepViewModel: KeepViewModel by inject()
@@ -28,14 +28,14 @@ class KeepAddFragment : Fragment(R.layout.fragment_keep_edit) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentKeepEditBinding.inflate(inflater, container, false)
-        return _binding!!.root
+        binding = FragmentKeepEditBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onDetach() {
         super.onDetach()
-        keep.keepBody = _binding!!.editKeepBody.text.toString()
-        keep.keepTitle = _binding!!.editTitle.text.toString()
+        keep.keepBody = binding.editKeepBody.text.toString()
+        keep.keepTitle = binding.editTitle.text.toString()
         if (keep.keepTitle.isNotBlank()) {
             keepViewModel.addKeep(keep)
         }

@@ -15,10 +15,14 @@ import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.OpenWeatherRepoOne
 import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.Daily
 import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.Hourly
 import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.WeatherMain
-import java.lang.StringBuilder
 import java.util.*
 
-class WeatherViewModel(application: Application) : AndroidViewModel(application) {
+class WeatherViewModel(
+    val geolocationRepo: GeolocationRepo,
+    val geocodingRepo: GeocodingRepo,
+    val openWeatherRepoOneCall: OpenWeatherRepoOneCall,
+    application: Application
+) : AndroidViewModel(application) {
 
     private val apiKeyWeather = application.getString(R.string.API_KEY_WEATHER)
     private val apiKeyGeolocation = application.getString(R.string.API_KEY_GEOLOCATION)
@@ -29,8 +33,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     private val _weather = MutableLiveData<String>().apply {}
     private val _feel = MutableLiveData<String>().apply {}
 
-    private val _recyclerViewToday = MutableLiveData<Array<Hourly>>().apply {}
-    private val _recyclerViewMoreDays = MutableLiveData<Array<Daily>>().apply {}
+    private val _recyclerViewToday = MutableLiveData<List<Hourly>>().apply {}
+    private val _recyclerViewMoreDays = MutableLiveData<List<Daily>>().apply {}
 
     val cityName: LiveData<LoadStateWrapper<String>> = _cityName
     val icon: LiveData<String> = _icon
@@ -40,13 +44,13 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
 
     val app = application
 
-    val recyclerViewToday: LiveData<Array<Hourly>> = _recyclerViewToday
-    val recyclerViewMoreDays: LiveData<Array<Daily>> = _recyclerViewMoreDays
+    val recyclerViewToday: LiveData<List<Hourly>> = _recyclerViewToday
+    val recyclerViewMoreDays: LiveData<List<Daily>> = _recyclerViewMoreDays
 
     fun refreshCity() {
         _cityName.value = LoadStateWrapper(state = LoadState.LOADING)
         viewModelScope.launch {
-            GeolocationRepo.Singleton.api.loadLocation(apiKeyGeolocation)
+            geolocationRepo.api.loadLocation(apiKeyGeolocation)
                 .enqueue(object : retrofit2.Callback<Geolocation?> {
                     override fun onResponse(
                         call: Call<Geolocation?>,
@@ -66,10 +70,10 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private fun initCityName(body: Geolocation) {
-        GeocodingRepo.Singleton.api.loadLocation(
+        geocodingRepo.api.loadLocation(
             body.location!!.lat.toString() + ","
                     + body.location!!.lng.toString(),
-                    apiKeyGeolocation
+            apiKeyGeolocation
         )
             .enqueue(object : retrofit2.Callback<GeocodingMain> {
                 override fun onResponse(
@@ -88,7 +92,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private fun initCity(body: Geolocation, address: String) {
-        OpenWeatherRepoOneCall.Singleton.api.loadWeather(
+        openWeatherRepoOneCall.api.loadWeather(
             lat = body.location!!.lat,
             lon = body.location!!.lng,
             lang = Locale.getDefault().toString().toLowerCase(Locale.getDefault()).split("_")[0],
@@ -127,13 +131,11 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         //название погоды
         _weather.postValue(body.current.weather[0].description)
         //список погоды на сегодня
-        _recyclerViewToday.postValue(
-            body.hourly
-        )
+        val hourly: List<Hourly> = body.hourly
+        _recyclerViewToday.postValue(hourly)
         //список погоды на другие дни
-        _recyclerViewMoreDays.postValue(
-            body.daily
-        )
+        val daily: List<Daily> = body.daily
+        _recyclerViewMoreDays.postValue(daily)
     }
 
     private fun getIcon(icon: String): String {

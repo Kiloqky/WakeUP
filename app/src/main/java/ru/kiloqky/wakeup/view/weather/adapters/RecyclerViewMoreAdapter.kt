@@ -8,17 +8,23 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.kiloqky.wakeup.R
 import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.Daily
+import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.Hourly
 import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.WeatherMain
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
 class RecyclerViewMoreAdapter(
-    private val data: Array<Daily>
 ) :
     RecyclerView.Adapter<RecyclerViewMoreAdapter.ViewHolder>() {
 
     private val dateFormat: SimpleDateFormat = SimpleDateFormat("EEEE", Locale.getDefault())
+
+    var data: List<Daily> = emptyList()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     class ViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {

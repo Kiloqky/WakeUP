@@ -19,6 +19,6 @@ class Current {
     var humidity: Int = 0
 
     @SerializedName("weather")
-    lateinit var weather: ArrayList<Weather>
+    lateinit var weather: MutableList<Weather>
 }
 

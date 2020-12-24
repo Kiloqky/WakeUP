@@ -24,7 +24,7 @@ val keepModule = module {
 }
 
 val newsModule = module {
-    viewModel { NewsViewModel(get(), get()) }
+    single { NewsViewModel(get(), get()) }
 }
 val weatherModule = module {
     viewModel {

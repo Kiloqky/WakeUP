@@ -14,14 +14,13 @@
         android:layout_marginTop="10dp"
         android:background="@android:color/transparent"
         android:fontFamily="@font/evanderextrabold"
-        android:inputType="text"
         android:hint="@string/title"
+        android:importantForAutofill="no"
+        android:inputType="text"
         android:textAlignment="center"
-        app:layout_constraintTop_toTopOf="parent"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:hint="@string/body"
         android:id="@+id/editKeepBody"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -30,10 +29,11 @@
         android:ems="10"
         android:fontFamily="@font/evanderextralight"
         android:gravity="start|top"
+        android:hint="@string/body"
+        android:importantForAutofill="no"
         android:inputType="textMultiLine"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTitle"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/editTitle" />
 </androidx.constraintlayout.widget.ConstraintLayout>

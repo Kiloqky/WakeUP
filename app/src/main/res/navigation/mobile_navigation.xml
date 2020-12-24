@@ -16,23 +16,45 @@
         android:name="ru.kiloqky.wakeup.view.keep.KeepFragment"
         android:label="@string/keep"
         tools:layout="@layout/fragment_keep">
-        <action
-            android:id="@+id/action_nav_keep_to_keepEdit"
-            app:destination="@id/keepEdit" />
+
         <action
             android:id="@+id/action_nav_keep_to_keepAdd"
-            app:destination="@id/keepAdd" />
+            app:destination="@id/keepAdd"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
+
+        <action
+            android:id="@+id/action_nav_keep_to_keepEdit"
+            app:destination="@id/keepEdit"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
     </fragment>
 
     <fragment
         android:id="@+id/nav_news"
         android:name="ru.kiloqky.wakeup.view.news.NewsFragment"
         android:label="@string/news"
-        tools:layout="@layout/fragment_news" />
+        tools:layout="@layout/fragment_news">
+        <action
+            android:id="@+id/action_nav_news_to_news_details"
+            app:destination="@id/news_details" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/news_details"
+        android:name="ru.kiloqky.wakeup.view.news.NewsDetailsFragment"
+        android:label="@string/news"
+        tools:layout="@layout/fragment_news_details" />
+
     <fragment
         android:id="@+id/keepEdit"
         android:name="ru.kiloqky.wakeup.view.keep.KeepEditFragment"
         tools:layout="@layout/fragment_keep_edit" />
+
     <fragment
         android:id="@+id/keepAdd"
         android:name="ru.kiloqky.wakeup.view.keep.KeepAddFragment"

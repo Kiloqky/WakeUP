@@ -23,26 +23,25 @@ class WeatherViewModel(
     val openWeatherRepoOneCall: OpenWeatherRepoOneCall,
     application: Application
 ) : AndroidViewModel(application) {
+    val app = application
 
     private val apiKeyWeather = application.getString(R.string.API_KEY_WEATHER)
     private val apiKeyGeolocation = application.getString(R.string.API_KEY_GEOLOCATION)
 
-    private val _cityName = MutableLiveData<LoadStateWrapper<String>>().apply {}
-    private val _icon = MutableLiveData<String>().apply {}
-    private val _temp = MutableLiveData<String>().apply {}
-    private val _weather = MutableLiveData<String>().apply {}
-    private val _feel = MutableLiveData<String>().apply {}
+    private val _cityName = MutableLiveData<LoadStateWrapper<String>>()
+    private val _icon = MutableLiveData<String>()
+    private val _temp = MutableLiveData<String>()
+    private val _weather = MutableLiveData<String>()
+    private val _feel = MutableLiveData<String>()
 
-    private val _recyclerViewToday = MutableLiveData<List<Hourly>>().apply {}
-    private val _recyclerViewMoreDays = MutableLiveData<List<Daily>>().apply {}
+    private val _recyclerViewToday = MutableLiveData<List<Hourly>>()
+    private val _recyclerViewMoreDays = MutableLiveData<List<Daily>>()
 
     val cityName: LiveData<LoadStateWrapper<String>> = _cityName
     val icon: LiveData<String> = _icon
     val temp: LiveData<String> = _temp
     val weather: LiveData<String> = _weather
     val feel: LiveData<String> = _feel
-
-    val app = application
 
     val recyclerViewToday: LiveData<List<Hourly>> = _recyclerViewToday
     val recyclerViewMoreDays: LiveData<List<Daily>> = _recyclerViewMoreDays
@@ -131,10 +130,10 @@ class WeatherViewModel(
         //название погоды
         _weather.postValue(body.current.weather[0].description)
         //список погоды на сегодня
-        val hourly: List<Hourly> = body.hourly
+        val hourly: List<Hourly> = body.hourly.subList(1, body.hourly.size)
         _recyclerViewToday.postValue(hourly)
         //список погоды на другие дни
-        val daily: List<Daily> = body.daily
+        val daily: List<Daily> = body.daily.subList(1, body.daily.size)
         _recyclerViewMoreDays.postValue(daily)
     }
 

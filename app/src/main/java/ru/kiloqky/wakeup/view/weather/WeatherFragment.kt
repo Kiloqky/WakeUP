@@ -21,8 +21,8 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
     private val weatherViewModel: WeatherViewModel by viewModel()
     private lateinit var weatherFont: Typeface
     private lateinit var binding: FragmentWeatherBinding
-    val recyclerViewTodayAdapter = RecyclerViewTodayAdapter()
-    val recyclerViewMoreAdapter = RecyclerViewMoreAdapter()
+    private val recyclerViewTodayAdapter = RecyclerViewTodayAdapter()
+    private val recyclerViewMoreAdapter = RecyclerViewMoreAdapter()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

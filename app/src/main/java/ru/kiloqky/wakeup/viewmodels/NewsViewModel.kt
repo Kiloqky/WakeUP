@@ -1,36 +1,34 @@
 package ru.kiloqky.wakeup.viewmodels
 
 import android.app.Application
-import android.provider.Settings.Global.getString
-import androidx.core.content.contentValuesOf
 import androidx.lifecycle.*
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Response
-import ru.kiloqky.wakeup.App
 import ru.kiloqky.wakeup.R
-import ru.kiloqky.wakeup.rest.retrofit.geolocation.geocodingApi.GeocodingRepo
-import ru.kiloqky.wakeup.rest.retrofit.geolocation.geolocationApi.GeolocationRepo
 import ru.kiloqky.wakeup.rest.retrofit.news.NewsAPIRepo
 import ru.kiloqky.wakeup.rest.retrofit.news.entitiesNews.Articles
 import ru.kiloqky.wakeup.rest.retrofit.news.entitiesNews.NewsBody
-import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.OpenWeatherRepoOneCall
 import java.util.*
 import kotlin.collections.ArrayList
 
 class NewsViewModel(
-    val newsAPIRepo: NewsAPIRepo,
+    private val newsApiRepo: NewsAPIRepo,
     application: Application
 ) : AndroidViewModel(application) {
 
     private val API_KEY_NEWS: String = application.getString(R.string.API_KEY_NEWS)
-    private val _recyclerNews = MutableLiveData<LoadStateWrapper<Articles>>().apply {}
+
+    private val _recyclerNews = MutableLiveData<LoadStateWrapper<Articles>>()
     val recyclerNews: LiveData<LoadStateWrapper<Articles>> = _recyclerNews
+
+    private val _broadcastArticleLD = MutableLiveData<Articles>()
+    val bloadcastNewsLD: LiveData<Articles> = _broadcastArticleLD
 
     fun fetchNews() {
         viewModelScope.launch {
             _recyclerNews.postValue(LoadStateWrapper(state = LoadState.LOADING))
-            newsAPIRepo.api.loadNews(
+            newsApiRepo.api.loadNews(
                 Locale.getDefault().country.toString().toLowerCase(Locale.getDefault()),
                 API_KEY_NEWS
             ).enqueue(object : retrofit2.Callback<NewsBody> {
@@ -57,6 +55,10 @@ class NewsViewModel(
 
             })
         }
+    }
+
+    fun broadcastNews(article: Articles) {
+        viewModelScope.launch { _broadcastArticleLD.postValue(article) }
     }
 
     enum class LoadState {

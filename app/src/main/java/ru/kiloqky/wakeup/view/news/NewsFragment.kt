@@ -1,7 +1,5 @@
 package ru.kiloqky.wakeup.view.news
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,8 +7,9 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.android.ext.android.inject
 import ru.kiloqky.wakeup.R
 import ru.kiloqky.wakeup.databinding.FragmentNewsBinding
 import ru.kiloqky.wakeup.view.news.adapters.RecyclerNewsAdapter
@@ -19,8 +18,13 @@ import ru.kiloqky.wakeup.viewmodels.NewsViewModel
 class NewsFragment : Fragment(R.layout.fragment_news) {
 
     private lateinit var binding: FragmentNewsBinding
-    private val newsViewModel: NewsViewModel by viewModel()
+    private val newsViewModel: NewsViewModel by inject()
     lateinit var adapter: RecyclerNewsAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        refreshData()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,13 +38,12 @@ class NewsFragment : Fragment(R.layout.fragment_news) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.recyclerNews.layoutManager = LinearLayoutManager(context)
-        adapter = RecyclerNewsAdapter {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.url))
-            startActivity(intent)
+        adapter = RecyclerNewsAdapter { article, extras ->
+            newsViewModel.broadcastNews(article)
+            findNavController().navigate(R.id.action_nav_news_to_news_details, null, null, extras)
         }
         binding.recyclerNews.adapter = adapter
         initVM()
-        refreshData()
     }
 
     private fun initVM() {

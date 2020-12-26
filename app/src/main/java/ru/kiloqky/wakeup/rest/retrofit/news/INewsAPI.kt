@@ -1,4 +1,5 @@
 package ru.kiloqky.wakeup.rest.retrofit.news
+
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -9,5 +10,5 @@ interface INewsAPI {
     fun loadNews(
         @Query("country") country: String,
         @Query("apiKey") api_key: String
-    ):Call<NewsBody>
+    ): Call<NewsBody>
 }

@@ -11,6 +11,5 @@ class GeocodingRepo {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         return adapter.create(IGeocodingAPI::class.java)
-
     }
 }

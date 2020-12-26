@@ -19,6 +19,7 @@ val appModule = module {
     single { NewsAPIRepo() }
     single { OpenWeatherRepoOneCall() }
 }
+
 val keepModule = module {
     single { KeepViewModel(get()) }
 }
@@ -26,6 +27,7 @@ val keepModule = module {
 val newsModule = module {
     single { NewsViewModel(get(), get()) }
 }
+
 val weatherModule = module {
     viewModel {
         WeatherViewModel(get(), get(), get(), get())

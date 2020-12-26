@@ -3,42 +3,39 @@ package ru.kiloqky.wakeup.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import ru.kiloqky.wakeup.rest.room.KeepDataBase
 import ru.kiloqky.wakeup.rest.room.model.Keep
-import kotlin.concurrent.thread
 
 
-class KeepViewModel(var database: KeepDataBase) : ViewModel() {
+class KeepViewModel(private var database: KeepDataBase) : ViewModel() {
 
     //общение между фрагментами
-    private val _editingKeep = MutableLiveData<Keep>().apply {}
+    private val _editingKeep = MutableLiveData<Keep>()
     val editingKeep: LiveData<Keep> = _editingKeep
+
     fun editingKeep(keep: Keep) {
-        thread {
+        GlobalScope.launch {
             _editingKeep.postValue(keep)
         }
     }
 
     //recycler Data
-    private val _recyclerKeeps =
-        MutableLiveData<List<Keep>>().apply {}
+    private val _recyclerKeeps = MutableLiveData<List<Keep>>()
     val recyclerKeeps: LiveData<List<Keep>> = _recyclerKeeps
 
     //добавление новой заметки
     fun addKeep(keep: Keep) {
-        thread {
+        GlobalScope.launch {
             database.keepDao().insertKeep(keep)
             fetchData()
         }
     }
 
-
     //удаление заметки
     fun deleteKeep(keep: Keep) {
-        thread {
+        GlobalScope.launch {
             database.keepDao().deleteKeep(keep)
             fetchData()
         }
@@ -46,7 +43,7 @@ class KeepViewModel(var database: KeepDataBase) : ViewModel() {
 
     //обновление заметки
     fun editKeep(keep: Keep) {
-        thread {
+        GlobalScope.launch {
             database.keepDao().updateKeep(keep.id, keep.keepTitle, keep.keepBody!!)
             fetchData()
         }

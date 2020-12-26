@@ -10,30 +10,30 @@
         android:orientation="vertical">
 
         <TextView
-            android:transitionName="fromNamePublisher"
             android:id="@+id/namePublisher"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/bold"
             android:gravity="center"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:transitionName="fromNamePublisher" />
 
         <TextView
-            android:transitionName="fromTitle"
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/light"
             android:gravity="center"
-            android:textSize="17sp" />
+            android:textSize="17sp"
+            android:transitionName="fromTitle" />
 
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:transitionName="newsImageCard"
             android:id="@+id/newsImage"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:scaleType="fitXY" />
+            android:scaleType="fitXY"
+            android:transitionName="newsImageCard" />
     </LinearLayout>
 
 

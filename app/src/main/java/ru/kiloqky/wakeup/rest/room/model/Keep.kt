@@ -22,6 +22,4 @@ class Keep {
 
     @ColumnInfo(name = KEEP_BODY)
     var keepBody: String? = null
-
-
 }

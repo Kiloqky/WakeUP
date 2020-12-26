@@ -18,9 +18,9 @@ import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.WeatherMa
 import java.util.*
 
 class WeatherViewModel(
-    val geolocationRepo: GeolocationRepo,
-    val geocodingRepo: GeocodingRepo,
-    val openWeatherRepoOneCall: OpenWeatherRepoOneCall,
+    private val geolocationRepo: GeolocationRepo,
+    private val geocodingRepo: GeocodingRepo,
+    private val openWeatherRepoOneCall: OpenWeatherRepoOneCall,
     application: Application
 ) : AndroidViewModel(application) {
     val app = application
@@ -65,14 +65,13 @@ class WeatherViewModel(
                     }
                 })
         }
-
     }
 
     private fun initCityName(body: Geolocation) {
         geocodingRepo.api.loadLocation(
             body.location!!.lat.toString() + ","
                     + body.location!!.lng.toString(),
-            apiKeyGeolocation
+                    apiKeyGeolocation
         )
             .enqueue(object : retrofit2.Callback<GeocodingMain> {
                 override fun onResponse(

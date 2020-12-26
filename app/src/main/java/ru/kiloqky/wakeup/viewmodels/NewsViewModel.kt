@@ -17,20 +17,20 @@ class NewsViewModel(
     application: Application
 ) : AndroidViewModel(application) {
 
-    private val API_KEY_NEWS: String = application.getString(R.string.API_KEY_NEWS)
+    private val apiKeyNews: String = application.getString(R.string.API_KEY_NEWS)
 
     private val _recyclerNews = MutableLiveData<LoadStateWrapper<Articles>>()
     val recyclerNews: LiveData<LoadStateWrapper<Articles>> = _recyclerNews
 
     private val _broadcastArticleLD = MutableLiveData<Articles>()
-    val bloadcastNewsLD: LiveData<Articles> = _broadcastArticleLD
+    val broadcastNewsLD: LiveData<Articles> = _broadcastArticleLD
 
     fun fetchNews() {
         viewModelScope.launch {
             _recyclerNews.postValue(LoadStateWrapper(state = LoadState.LOADING))
             newsApiRepo.api.loadNews(
                 Locale.getDefault().country.toString().toLowerCase(Locale.getDefault()),
-                API_KEY_NEWS
+                apiKeyNews
             ).enqueue(object : retrofit2.Callback<NewsBody> {
                 override fun onResponse(call: Call<NewsBody>, response: Response<NewsBody>) {
                     val arrayList: MutableList<Articles> = ArrayList()

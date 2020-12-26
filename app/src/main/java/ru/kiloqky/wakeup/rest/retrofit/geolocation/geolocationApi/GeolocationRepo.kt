@@ -12,5 +12,4 @@ class GeolocationRepo {
             .build()
         return adapter.create(IGeolocationAPI::class.java)
     }
-
 }

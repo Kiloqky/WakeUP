@@ -60,7 +60,6 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
                     binding.cityName.text = it.error
                 }
             }
-
         })
         weatherViewModel.icon.observe(viewLifecycleOwner, {
             binding.iconMain.text = it

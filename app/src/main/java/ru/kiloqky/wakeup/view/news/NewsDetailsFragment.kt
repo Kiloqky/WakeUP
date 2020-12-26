@@ -42,7 +42,7 @@ class NewsDetailsFragment : Fragment(R.layout.fragment_news_details) {
     }
 
     private fun initVM() {
-        newsViewModel.bloadcastNewsLD.observe(viewLifecycleOwner, {
+        newsViewModel.broadcastNewsLD.observe(viewLifecycleOwner, {
             articles = it
             binding.namePublisher.text = it.source.name
             binding.title.text = it.title

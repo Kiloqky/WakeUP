@@ -21,7 +21,7 @@ class KeepFragment : Fragment(R.layout.fragment_keep) {
     private var binding: FragmentKeepBinding? = null
 
     private val keepViewModel: KeepViewModel by inject()
-    private lateinit var recyclerKeepsAdapter:RecyclerKeepsAdapter
+    private lateinit var recyclerKeepsAdapter: RecyclerKeepsAdapter
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRV()

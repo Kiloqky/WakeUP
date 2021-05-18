@@ -11,7 +11,8 @@
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
+        android:fontFamily="@font/bold"
+        android:gravity="center"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -20,21 +21,23 @@
         android:id="@+id/icon_today"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
+        android:fontFamily="@font/bold"
+        android:gravity="center"
         android:textSize="25sp"
         app:layout_constraintBottom_toTopOf="@+id/temp_today"
         app:layout_constraintEnd_toEndOf="@+id/time"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/time"
         app:layout_constraintTop_toTopOf="@+id/time"
-        app:layout_constraintVertical_bias="0.651" />
+        app:layout_constraintVertical_bias="0.634" />
 
     <TextView
         android:id="@+id/temp_today"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
+        android:fontFamily="@font/bold"
+        android:gravity="center"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/icon_today"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="@+id/icon_today" />
 </androidx.constraintlayout.widget.ConstraintLayout>

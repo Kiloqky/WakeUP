@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="app_name">Проснись</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Настройки</string>
+
+    <string name="weather">Погода</string>
+    <string name="keep">Заметки</string>
+    <string name="news">Новости</string>
+    <string name="title">Название</string>
+    <string name="body">Текст</string>
+    <string name="feel_like">Ощущается как: </string>
+    <string name="learn_more">Узнать больше…</string>
+</resources>

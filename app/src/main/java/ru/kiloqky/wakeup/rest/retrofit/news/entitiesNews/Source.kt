@@ -4,5 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 class Source {
     @SerializedName("name")
-    lateinit var name: String
+    var name: String? = null
 }

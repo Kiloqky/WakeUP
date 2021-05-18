@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import org.koin.android.ext.android.inject
 import ru.kiloqky.wakeup.R
 import ru.kiloqky.wakeup.databinding.FragmentKeepEditBinding
-import ru.kiloqky.wakeup.rest.room.model.Keep
+import ru.kiloqky.wakeup.rest.room.keep.model.Keep
 import ru.kiloqky.wakeup.viewmodels.KeepViewModel
 
 class KeepAddFragment : Fragment(R.layout.fragment_keep_edit) {

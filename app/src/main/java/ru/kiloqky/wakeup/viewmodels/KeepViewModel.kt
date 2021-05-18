@@ -1,33 +1,43 @@
 package ru.kiloqky.wakeup.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import ru.kiloqky.wakeup.rest.room.KeepDataBase
-import ru.kiloqky.wakeup.rest.room.model.Keep
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.*
+import ru.kiloqky.wakeup.rest.room.keep.KeepDataBase
+import ru.kiloqky.wakeup.rest.room.keep.model.Keep
 
 
 class KeepViewModel(private var database: KeepDataBase) : ViewModel() {
 
     //общение между фрагментами
-    private val _editingKeep = MutableLiveData<Keep>()
-    val editingKeep: LiveData<Keep> = _editingKeep
+    private val _editingKeep = MutableSharedFlow<Keep>(replay = 1, onBufferOverflow = BufferOverflow.DROP_LATEST)
+    val editingKeep: SharedFlow<Keep> = _editingKeep.asSharedFlow()
 
+    private val _recyclerKeeps =
+        MutableSharedFlow<List<Keep>>(replay = 1, onBufferOverflow = BufferOverflow.DROP_LATEST)
+    val recyclerKeeps: SharedFlow<List<Keep>> = _recyclerKeeps.asSharedFlow()
     fun editingKeep(keep: Keep) {
-        GlobalScope.launch {
-            _editingKeep.postValue(keep)
+        viewModelScope.launch {
+            _editingKeep.emit(keep)
         }
     }
 
     //recycler Data
-    private val _recyclerKeeps = MutableLiveData<List<Keep>>()
-    val recyclerKeeps: LiveData<List<Keep>> = _recyclerKeeps
+//    private val _recyclerKeeps = MutableSharedFlow<List<Keep>>(
+//        replay = 1,
+//        onBufferOverflow = BufferOverflow.DROP_LATEST
+//    ).shareIn(viewModelScope, started = SharingStarted.Lazily)
+
+
+    //    val recyclerKeeps: Flow<List<Keep>> = flow {
+//        emit(ArrayList(database.keepDao().getAll()))
+//    }.shareIn(viewModelScope, started = SharingStarted.Lazily, 1)
 
     //добавление новой заметки
     fun addKeep(keep: Keep) {
-        GlobalScope.launch {
+        CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
             database.keepDao().insertKeep(keep)
             fetchData()
         }
@@ -35,15 +45,16 @@ class KeepViewModel(private var database: KeepDataBase) : ViewModel() {
 
     //удаление заметки
     fun deleteKeep(keep: Keep) {
-        GlobalScope.launch {
+        CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
             database.keepDao().deleteKeep(keep)
             fetchData()
+
         }
     }
 
     //обновление заметки
     fun editKeep(keep: Keep) {
-        GlobalScope.launch {
+        CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
             database.keepDao().updateKeep(keep.id, keep.keepTitle, keep.keepBody!!)
             fetchData()
         }
@@ -51,8 +62,11 @@ class KeepViewModel(private var database: KeepDataBase) : ViewModel() {
 
     //обновление базы данных
     fun fetchData() {
-        GlobalScope.launch {
-            _recyclerKeeps.postValue(ArrayList(database.keepDao().getAll()))
+//        CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
+//            _recyclerKeeps.tryEmit(ArrayList(database.keepDao().getAll()))
+//        }
+        viewModelScope.launch {
+            _recyclerKeeps.emit(database.keepDao().getAll())
         }
     }
 

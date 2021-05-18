@@ -3,6 +3,9 @@ package ru.kiloqky.wakeup.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Response
@@ -17,13 +20,18 @@ import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.Hourly
 import ru.kiloqky.wakeup.rest.retrofit.openWeatherMap.onecall.entities.WeatherMain
 import java.util.*
 
+/**
+ * я бы и переписал это, но у меня закончилась подписка на Geocoding API
+ * продлевать ее не сильно хочется, просто поверьте что это работает, хоть и не так как я хотел бы сейчас
+ * 18.05.2021 (уровень 26.12.2020) **/
+
 class WeatherViewModel(
     private val geolocationRepo: GeolocationRepo,
     private val geocodingRepo: GeocodingRepo,
     private val openWeatherRepoOneCall: OpenWeatherRepoOneCall,
-    application: Application
-) : AndroidViewModel(application) {
-    val app = application
+    private val application: Application
+) : ViewModel() {
+
 
     private val apiKeyWeather = application.getString(R.string.API_KEY_WEATHER)
     private val apiKeyGeolocation = application.getString(R.string.API_KEY_GEOLOCATION)
@@ -48,30 +56,34 @@ class WeatherViewModel(
 
     fun refreshCity() {
         _cityName.value = LoadStateWrapper(state = LoadState.LOADING)
-        viewModelScope.launch {
-            geolocationRepo.api.loadLocation(apiKeyGeolocation)
-                .enqueue(object : retrofit2.Callback<Geolocation?> {
-                    override fun onResponse(
-                        call: Call<Geolocation?>,
-                        response: Response<Geolocation?>
-                    ) {
-                        if (response.body() != null && response.isSuccessful) {
-                            initCityName(response.body()!!)
+        with(CoroutineScope(SupervisorJob() + Dispatchers.IO)) {
+            launch {
+                geolocationRepo.api.loadLocation(apiKeyGeolocation)
+                    .enqueue(object : retrofit2.Callback<Geolocation?> {
+                        override fun onResponse(
+                            call: Call<Geolocation?>,
+                            response: Response<Geolocation?>
+                        ) {
+                            if (response.body() != null && response.isSuccessful) {
+                                initCityName(response.body()!!)
+                            }
                         }
-                    }
 
-                    override fun onFailure(call: Call<Geolocation?>, t: Throwable) {
-                        t.printStackTrace()
-                    }
-                })
+                        override fun onFailure(call: Call<Geolocation?>, t: Throwable) {
+                            _cityName.postValue(LoadStateWrapper(state = LoadState.ERROR))
+                            t.printStackTrace()
+                        }
+                    })
+            }
         }
     }
+
 
     private fun initCityName(body: Geolocation) {
         geocodingRepo.api.loadLocation(
             body.location!!.lat.toString() + ","
                     + body.location!!.lng.toString(),
-                    apiKeyGeolocation
+            apiKeyGeolocation
         )
             .enqueue(object : retrofit2.Callback<GeocodingMain> {
                 override fun onResponse(
@@ -84,6 +96,7 @@ class WeatherViewModel(
                 }
 
                 override fun onFailure(call: Call<GeocodingMain>, t: Throwable) {
+                    _cityName.postValue(LoadStateWrapper(state = LoadState.ERROR))
                     t.printStackTrace()
                 }
             })
@@ -98,16 +111,17 @@ class WeatherViewModel(
         )
             .enqueue(object : retrofit2.Callback<WeatherMain> {
                 override fun onResponse(call: Call<WeatherMain>, response: Response<WeatherMain>) {
-                    initCityInfo(response.body(), address)
+                    initWeatherInfo(response.body(), address)
                 }
 
                 override fun onFailure(call: Call<WeatherMain>, t: Throwable) {
+                    _cityName.postValue(LoadStateWrapper(state = LoadState.ERROR))
                     t.printStackTrace()
                 }
             })
     }
 
-    private fun initCityInfo(body: WeatherMain?, address: String) {
+    private fun initWeatherInfo(body: WeatherMain?, address: String) {
         //название города
         _cityName.postValue(LoadStateWrapper(address, LoadState.SUCCESS))
         //иконка погоды
@@ -121,7 +135,7 @@ class WeatherViewModel(
         )
         //ощущается как
         _feel.postValue(
-            app.getString(R.string.feel_like) + String.format(
+            application.getString(R.string.feel_like) + String.format(
                 Locale.getDefault(), "%.0f",
                 body.current.feelsLike - 272
             ) + "\u2103"
@@ -166,9 +180,10 @@ class WeatherViewModel(
         ERROR
     }
 
-    data class LoadStateWrapper<T>(
+    class LoadStateWrapper<T>(
         val data: T? = null,
         val state: LoadState,
         val error: String = "unknown error"
     )
+
 }

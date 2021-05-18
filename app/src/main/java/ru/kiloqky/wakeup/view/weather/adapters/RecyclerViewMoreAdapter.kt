@@ -1,5 +1,6 @@
 package ru.kiloqky.wakeup.view.weather.adapters
 
+import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
@@ -14,13 +15,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class RecyclerViewMoreAdapter(
-) :
+class RecyclerViewMoreAdapter :
     RecyclerView.Adapter<RecyclerViewMoreAdapter.ViewHolder>() {
 
     private val dateFormat: SimpleDateFormat = SimpleDateFormat("EEEE", Locale.getDefault())
 
     var data: List<Daily> = emptyList()
+        @SuppressLint("NotifyDataSetChanged")
         set(value) {
             field = value
             notifyDataSetChanged()

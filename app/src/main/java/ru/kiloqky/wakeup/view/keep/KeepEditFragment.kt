@@ -6,10 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import ru.kiloqky.wakeup.R
 import ru.kiloqky.wakeup.databinding.FragmentKeepEditBinding
-import ru.kiloqky.wakeup.rest.room.model.Keep
+import ru.kiloqky.wakeup.helpers.launchWhenStarted
+import ru.kiloqky.wakeup.rest.room.keep.model.Keep
 import ru.kiloqky.wakeup.viewmodels.KeepViewModel
 
 class KeepEditFragment : Fragment(R.layout.fragment_keep_edit) {
@@ -17,9 +20,17 @@ class KeepEditFragment : Fragment(R.layout.fragment_keep_edit) {
 
     lateinit var keep: Keep
     private val keepViewModel: KeepViewModel by inject()
+    override fun onStart() {
+        super.onStart()
+        keepViewModel.editingKeep.onEach {
+            keep = it
+            _binding!!.editTitle.setText(keep.keepTitle, TextView.BufferType.EDITABLE)
+            _binding!!.editKeepBody.setText(keep.keepBody, TextView.BufferType.EDITABLE)
+        }.launchWhenStarted(lifecycleScope)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initVM()
     }
 
 
@@ -47,11 +58,4 @@ class KeepEditFragment : Fragment(R.layout.fragment_keep_edit) {
         keepViewModel.editKeep(keep)
     }
 
-    private fun initVM() {
-        keepViewModel.editingKeep.observe(viewLifecycleOwner, {
-            keep = it
-            _binding!!.editTitle.setText(keep.keepTitle, TextView.BufferType.EDITABLE)
-            _binding!!.editKeepBody.setText(keep.keepBody, TextView.BufferType.EDITABLE)
-        })
-    }
 }

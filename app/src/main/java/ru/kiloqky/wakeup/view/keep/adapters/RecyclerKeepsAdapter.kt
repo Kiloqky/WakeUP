@@ -1,12 +1,13 @@
 package ru.kiloqky.wakeup.view.keep.adapters
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.kiloqky.wakeup.R
-import ru.kiloqky.wakeup.rest.room.model.Keep
+import ru.kiloqky.wakeup.rest.room.keep.model.Keep
 
 class RecyclerKeepsAdapter(
     val onItemClick: ((Keep) -> Unit)? = null,
@@ -15,6 +16,7 @@ class RecyclerKeepsAdapter(
     RecyclerView.Adapter<RecyclerKeepsAdapter.ViewHolder>() {
 
     var data: List<Keep> = emptyList()
+        @SuppressLint("NotifyDataSetChanged")
         set(value) {
             field = value
             notifyDataSetChanged()

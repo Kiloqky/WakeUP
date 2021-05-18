@@ -1,4 +1,4 @@
-package ru.kiloqky.wakeup.rest.room.model
+package ru.kiloqky.wakeup.rest.room.keep.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

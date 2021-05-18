@@ -1,64 +1,106 @@
 package ru.kiloqky.wakeup.viewmodels
 
 import android.app.Application
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Response
 import ru.kiloqky.wakeup.R
+import ru.kiloqky.wakeup.rest.NewsData
 import ru.kiloqky.wakeup.rest.retrofit.news.NewsAPIRepo
 import ru.kiloqky.wakeup.rest.retrofit.news.entitiesNews.Articles
 import ru.kiloqky.wakeup.rest.retrofit.news.entitiesNews.NewsBody
+import ru.kiloqky.wakeup.rest.room.news.NewsDataBase
+import ru.kiloqky.wakeup.rest.room.news.model.News
 import java.util.*
 import kotlin.collections.ArrayList
 
 class NewsViewModel(
     private val newsApiRepo: NewsAPIRepo,
-    application: Application
-) : AndroidViewModel(application) {
-
+    application: Application,
+    private val newsDataBase: NewsDataBase
+) : ViewModel() {
     private val apiKeyNews: String = application.getString(R.string.API_KEY_NEWS)
 
-    private val _recyclerNews = MutableLiveData<LoadStateWrapper<Articles>>()
-    val recyclerNews: LiveData<LoadStateWrapper<Articles>> = _recyclerNews
+    private val _recyclerNews =
+        MutableStateFlow(LoadStateWrapper(state = LoadState.LOADING))
+    val recyclerNews: StateFlow<LoadStateWrapper> = _recyclerNews.asStateFlow()
 
-    private val _broadcastArticleLD = MutableLiveData<Articles>()
-    val broadcastNewsLD: LiveData<Articles> = _broadcastArticleLD
+    private val _broadcastArticleLD =
+        MutableSharedFlow<NewsData>(1, onBufferOverflow = BufferOverflow.DROP_LATEST)
+    val broadcastNewsLD: SharedFlow<NewsData> = _broadcastArticleLD.asSharedFlow()
 
-    fun fetchNews() {
-        viewModelScope.launch {
-            _recyclerNews.postValue(LoadStateWrapper(state = LoadState.LOADING))
-            newsApiRepo.api.loadNews(
-                Locale.getDefault().country.toString().toLowerCase(Locale.getDefault()),
-                apiKeyNews
-            ).enqueue(object : retrofit2.Callback<NewsBody> {
-                override fun onResponse(call: Call<NewsBody>, response: Response<NewsBody>) {
-                    val arrayList: MutableList<Articles> = ArrayList()
-                    arrayList.addAll(response.body()!!.articles)
-                    _recyclerNews.postValue(
-                        LoadStateWrapper(
-                            data = arrayList,
-                            state = LoadState.SUCCESS
+    fun fetchNews(withoutInfo: Boolean) {
+        with(CoroutineScope(SupervisorJob() + Dispatchers.IO)) {
+            launch {
+                if (withoutInfo)
+                    this.launch {
+                        _recyclerNews.emit(
+                            LoadStateWrapper(
+                                state = LoadState.LOADING,
+                                data = newsDataBase.newsDao().getAll()
+                            )
                         )
-                    )
-                }
+                    }
 
-                override fun onFailure(call: Call<NewsBody>, t: Throwable) {
-                    _recyclerNews.postValue(
-                        LoadStateWrapper(
-                            state = LoadState.ERROR,
-                            error = "Unknown error"
-                        )
-                    )
-                    t.printStackTrace()
-                }
+                newsApiRepo.api.loadNews(
+                    Locale.getDefault().country.toString().toLowerCase(Locale.getDefault()),
+                    apiKeyNews
+                ).enqueue(object : retrofit2.Callback<NewsBody> {
+                    override fun onResponse(call: Call<NewsBody>, response: Response<NewsBody>) {
+                        val arrayList: MutableList<Articles> = ArrayList()
+                        arrayList.addAll(response.body()!!.articles)
+                        viewModelScope.launch {
+                            _recyclerNews.emit(
+                                LoadStateWrapper(
+                                    data = arrayList,
+                                    state = LoadState.SUCCESS
+                                )
+                            )
+                        }
+                        viewModelScope.launch {
+                            val cashList: MutableList<News> = mutableListOf()
+                            arrayList.forEach { article ->
+                                cashList.add(
+                                    News(
+                                        article.source?.name,
+                                        article.title,
+                                        article.description,
+                                        article.url,
+                                        article.urlToImage
+                                    )
+                                )
+                            }
+                            newsDataBase.newsDao().addAll(cashList as List<News>)
+                        }
 
-            })
+                    }
+
+                    override fun onFailure(call: Call<NewsBody>, t: Throwable) {
+                        viewModelScope.launch {
+                            _recyclerNews.emit(
+                                LoadStateWrapper(
+                                    state = LoadState.ERROR,
+                                )
+                            )
+                        }
+
+                        t.printStackTrace()
+                    }
+
+                })
+            }
         }
     }
 
-    fun broadcastNews(article: Articles) {
-        viewModelScope.launch { _broadcastArticleLD.postValue(article) }
+    fun broadcastNews(article: NewsData) {
+        viewModelScope.launch { _broadcastArticleLD.emit(article) }
     }
 
     enum class LoadState {
@@ -67,9 +109,9 @@ class NewsViewModel(
         ERROR
     }
 
-    data class LoadStateWrapper<T>(
-        val data: List<T>? = null,
+    data class LoadStateWrapper(
+        val data: List<NewsData>? = null,
         val state: LoadState,
-        val error: String = ""
+        val error: String = "unknown error"
     )
 }

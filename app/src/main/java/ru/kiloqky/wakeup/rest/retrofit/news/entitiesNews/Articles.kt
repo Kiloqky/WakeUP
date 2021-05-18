@@ -1,26 +1,27 @@
 package ru.kiloqky.wakeup.rest.retrofit.news.entitiesNews
 
 import com.google.gson.annotations.SerializedName
+import ru.kiloqky.wakeup.rest.NewsData
 
-class Articles {
+class Articles : NewsData() {
     @SerializedName("source")
-    lateinit var source: Source
+    var source: Source? = null
 
     @SerializedName("author")
     var author: String? = null
 
     @SerializedName("title")
-    lateinit var title: String
+    var title: String? = null
 
     @SerializedName("description")
-    lateinit var description: String
+    var description: String? = null
 
     @SerializedName("url")
-    lateinit var url: String
+    var url: String? = null
 
     @SerializedName("urlToImage")
     var urlToImage: String? = null
 
     @SerializedName("publishedAt")
-    lateinit var publishedAt: String
+    var publishedAt: String? = null
 }

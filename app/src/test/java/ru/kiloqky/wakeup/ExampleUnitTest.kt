@@ -1,5 +1,7 @@
 package ru.kiloqky.wakeup
 
+import kotlinx.coroutines.Dispatchers.IO
+import okhttp3.Dispatcher
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -13,5 +15,10 @@ class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
         assertEquals(4, 2 + 2)
+    }
+
+    @Test
+    fun coroutineTest(){
+
     }
 }

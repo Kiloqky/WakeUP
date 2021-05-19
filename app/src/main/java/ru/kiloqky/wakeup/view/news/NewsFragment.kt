@@ -60,7 +60,10 @@ class NewsFragment : Fragment(R.layout.fragment_news) {
                 NewsViewModel.LoadState.LOADING -> {
                     if (!binding.swipeRefreshLayout.isRefreshing)
                         binding.progressBarNews.visible()
-                    adapter.data
+                    it.data?.let { cacheNews ->
+                        adapter.data = cacheNews
+                    }
+
                 }
                 NewsViewModel.LoadState.SUCCESS -> {
                     binding.progressBarNews.gone()

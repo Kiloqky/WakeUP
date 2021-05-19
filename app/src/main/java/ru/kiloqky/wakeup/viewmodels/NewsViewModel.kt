@@ -1,6 +1,7 @@
 package ru.kiloqky.wakeup.viewmodels
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
@@ -37,20 +38,22 @@ class NewsViewModel(
     val broadcastNewsLD: SharedFlow<NewsData> = _broadcastArticleLD.asSharedFlow()
 
     fun fetchNews(withoutInfo: Boolean) {
+        if (withoutInfo) {
+            viewModelScope.launch {
+                Log.i("news", "cash")
+                val data = newsDataBase.newsDao().getAll()
+                _recyclerNews.tryEmit(
+                    LoadStateWrapper(
+                        state = LoadState.LOADING,
+                        data = data
+                    )
+                )
+            }
+        }
         with(CoroutineScope(SupervisorJob() + Dispatchers.IO)) {
             launch {
-                if (withoutInfo)
-                    this.launch {
-                        _recyclerNews.emit(
-                            LoadStateWrapper(
-                                state = LoadState.LOADING,
-                                data = newsDataBase.newsDao().getAll()
-                            )
-                        )
-                    }
-
                 newsApiRepo.api.loadNews(
-                    Locale.getDefault().country.toString().toLowerCase(Locale.getDefault()),
+                    Locale.getDefault().country.toString().lowercase(Locale.getDefault()),
                     apiKeyNews
                 ).enqueue(object : retrofit2.Callback<NewsBody> {
                     override fun onResponse(call: Call<NewsBody>, response: Response<NewsBody>) {
@@ -65,6 +68,7 @@ class NewsViewModel(
                             )
                         }
                         viewModelScope.launch {
+                            newsDataBase.newsDao().deleteAll()
                             val cashList: MutableList<News> = mutableListOf()
                             arrayList.forEach { article ->
                                 cashList.add(

@@ -6,6 +6,7 @@ Currently used:
 - Retrofit
 - Coroutines
 - Coroutines Flow
+- LiveData
 - Piccasso
 - Room
 
